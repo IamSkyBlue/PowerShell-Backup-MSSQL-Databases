@@ -12,13 +12,17 @@
 # IMPORTANT: Parts that will need be modified for your environment are double commented (##). The rest can safely be left alone.
 
 ## Set SQL Server instance.
-$sqlserver = "SQLServerName\SQLInstanceName"
+$sqlserver = "localhost"
 
 ## Set the database name(s)
-$Databases = @("Database1", "Database2", "Database3")
+$Databases = @("test")
+
+## username and password
+$SQLusername = "username"
+$Password = "password"
 
 ## Set backup path
-$TopLevelBackupPath = "E:\MSSQLBackups"
+$TopLevelBackupPath = "C:\path\to\location"
 
 # Define date parameters.
 $timestamp = Get-Date -Format yyyy-MM-dd
@@ -67,13 +71,13 @@ function Start-Backup {
     # Start backing up SQL databases.
     $n++
     Write-Host "[$n] Backing up $Database..."
-    SQLCMD.EXE -E -S $sqlserver -Q "BACKUP DATABASE $Database TO DISK='$BackupPath\$timestamp\$Database`_$timestamp.bak' WITH FORMAT"
+    SQLCMD.EXE -U $SQLusername -P $Password  -S $sqlserver -Q "BACKUP DATABASE $Database TO DISK='$BackupPath\$timestamp\$Database`_$timestamp.bak' WITH FORMAT"
     Write-Host ""
 
     # Verify backed up SQL databases.
     $n++
     Write-Host "[$n] Verifying $Database backup..."
-    SQLCMD.EXE -E -S $sqlserver -Q "RESTORE VERIFYONLY FROM DISK = '$BackupPath\$timestamp\$Database`_$timestamp.bak'"
+    SQLCMD.EXE -U $SQLusername -P $Password  -S $sqlserver -Q "RESTORE VERIFYONLY FROM DISK = '$BackupPath\$timestamp\$Database`_$timestamp.bak'"
     Write-Host ""
   }
 
